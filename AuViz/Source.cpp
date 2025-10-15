@@ -32,9 +32,6 @@ int main() {
 	winAC::initAC();
 
 #if defined(_WIN64) || defined(__CYGWIN)
-/*#include <WinUser.h>
-	auto hwnd = wn->getSystemHandle();
-	SetWindowLongPtr(hwnd, GWL_EXSTYLE, GetWindowLongPtr(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);*/
 	MARGINS mrgn;
 	mrgn.cxLeftWidth = -1;
 	SetWindowLongPtr(wn->getNativeHandle(), GWL_STYLE, WS_POPUP | WS_VISIBLE);
@@ -48,9 +45,6 @@ int main() {
 		abands.reserve(bands);
 		winAC::getData(len, ndata);
 		
-		//std::cout << ndata[0];
-		/*if (!ndata.size())
-			continue;*/
 		idx = 0;
 		if (ndata.size()) {
 			auto data = avfft::getSpectrum(ndata, bands);
@@ -64,21 +58,21 @@ int main() {
 			}
 		}
 		else {
-			std::for_each(smbands.begin(), smbands.end(), [](float k) {return k -= 0.1;});
+			std::for_each(smbands.begin(), smbands.end(), [](float k) {return k -= 0.1f;});
 			avRender::render(tan(M_PI / 3), clk.restart().asMilliseconds(), smbands);
 			abands.clear();
 			ndata.clear();
 			continue;
 		}
 		if (bnbr.size() > smooth) {
-			for (int i = 0; i < bands; ++i)
+			for (unsigned int i = 0; i < bands; ++i)
 				smbands[i] -= bnbr.back()[i] / smooth;
 			bnbr.erase(bnbr.begin());
-			for (int l = 0; l < bands; ++l)
+			for (unsigned int l = 0; l < bands; ++l)
 				smbands[l] += abands[l] / smooth;
 		}
 		bnbr.emplace_back(abands);
-		svec = std::vector<float>(smbands.begin(), smbands.begin() + smbands.size()/* / 4*/);
+		svec = std::vector<float>(smbands.begin(), smbands.begin() + smbands.size());
 		tme = clk.restart().asMilliseconds();
 		atme += tme;
 		if (atme / 2.f >= 800 || amax < maxval) {
@@ -94,7 +88,7 @@ int main() {
 			a *= 2;
 		}
 
-		avRender::render(tan(M_PI / 3), tme, svec);
+		avRender::render(tan(M_PI / 3.f), tme, svec);
 		abands.clear();
 		ndata.clear();
 	}

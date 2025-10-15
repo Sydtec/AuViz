@@ -244,10 +244,9 @@ namespace avRender {
 				close = true; 
 				return;
 			}
-		//in = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
 		gm = (int)(++gm) % (int)(*viewPort).getSize().x;
 
-		//std::cout << in[10] << ' ';
 
 		(*gridTransform).rotate(sf::degrees(0.1), sf::Vector2f((*gridtex).getSize()) / 2.f);
 		(*mapshader).setUniform("spin", sf::Glsl::Mat4(*gridTransform));
