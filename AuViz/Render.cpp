@@ -14,13 +14,6 @@ namespace avRender {
 	std::unique_ptr<sf::RectangleShape> viewPort;
 	std::unique_ptr<sf::Sprite> tsprt;
 
-	//calculate position of each pixel in framebuffer given its 3d coordinates calculated from the heightmap and store in texturemap using imageStore
-	//render to framebuf and calculate color of pixel and set depth accordingly
-	//use use radial blur to calculate godrays
-
-	//need one shader to map grid texture to texturemap, one to propagate the height buffer,
-	//one tomove the grid and render to the framebuffer, and one to apply post processing
-
 	void GLAPIENTRY
 		MessageCallback(GLenum source,
 			GLenum type,
@@ -39,9 +32,13 @@ namespace avRender {
 		sf::Texture texture;
 		sf::CircleShape shape = sf::CircleShape();
 		bool clicked = false;
+		inline static int occupiedId, occupiedCount;
+		unsigned int id;
 	public:
 		bool drawAndCheck(sf::RenderWindow* wnd) {
 			wnd->draw(shape);
+			if (occupiedId != id && occupiedId != 0)
+				return false;
 			if (shape.getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition() - (sf::Vector2f)wnd->getPosition()) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && !clicked) {
 				clicked = true;
 				return true;
@@ -53,16 +50,22 @@ namespace avRender {
 
 		bool drawAndCheckHeld(sf::RenderWindow* wnd) {
 			wnd->draw(shape);
+			if (occupiedId != id && occupiedId != 0)
+				return false;
 			if (shape.getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition() - (sf::Vector2f)wnd->getPosition())) {
 				shape.setOutlineThickness(2);
 				clicked = true;
 			}
 			else
 				shape.setOutlineThickness(0);
-			if (clicked && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+			if (clicked && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+				occupiedId = id;
 				return true;
-			else
+			}
+			else {
 				clicked = false;
+				occupiedId = 0;
+			}
 			return shape.getLocalBounds().contains((sf::Vector2f)sf::Mouse::getPosition() - (sf::Vector2f)wnd->getPosition()) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
 		}
 
@@ -77,6 +80,7 @@ namespace avRender {
 			shape.setTexture(&texture);
 			shape.setPosition(pos);
 			shape.setOutlineColor(sf::Color::White);
+			id = ++occupiedCount;
 		}
 		
 	} borderBtn(sf::Vector2f(100, 500), 20, "../auvizmove.png"),
