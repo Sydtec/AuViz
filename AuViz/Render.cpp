@@ -100,7 +100,10 @@ namespace avRender {
 
 		gridtex = std::make_unique<sf::Texture>();
 
-		(*gridtex).loadFromFile("../grid.png");
+		if (!(*gridtex).loadFromFile("../grid.png")) {
+			std::cout << "Couldn't load grid texture";
+			exit();
+		}
 		auto gts = (*gridtex).getSize();
 
 		(*rwin).create(sf::VideoMode({ 800, 800 }), "AuViz", sf::Style::None);
@@ -108,7 +111,10 @@ namespace avRender {
 		settingswin->create(sf::VideoMode({ 44, 44 }), "AuViz ray target", sf::Style::None);
 		settingswin->setPosition(rwin->getPosition() + sf::Vector2i(98, 582));
 
-		(*rwin).setActive(true);
+		if (!(*rwin).setActive(true)) {
+			std::cout << "Couldn't activate main window";
+			exit();
+		}
 
 		gladLoadGLLoader(reinterpret_cast<GLADloadproc>(sf::Context::getFunction));
 
